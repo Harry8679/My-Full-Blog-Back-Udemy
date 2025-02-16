@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const verifyToken = require("../middlewares/auth.middleware");
 const router = express.Router();
 
 // Inscription
@@ -35,5 +36,21 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
+
+router.post("/logout", (req, res) => {
+  res.json({ message: "Déconnexion réussie" });
+});
+
+router.get("/profile", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("username email");
+    if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
+
+    res.json({ user });
+  } catch (error) {
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 
 module.exports = router;

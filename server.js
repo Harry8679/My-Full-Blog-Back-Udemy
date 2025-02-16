@@ -4,6 +4,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/auth.route");
 const postRoutes = require("./routes/post.route");
+const commentRoutes = require('./routes/comment.route');
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,7 @@ app.use(cors());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Connexion à MongoDB
 mongoose.connect(process.env.MONGO_URI, {})
