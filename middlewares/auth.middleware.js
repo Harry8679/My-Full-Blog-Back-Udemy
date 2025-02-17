@@ -4,18 +4,26 @@ dotenv.config();
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.header("Authorization");
-  if (!authHeader) return res.status(401).json({ error: "Accès refusé. Aucun token fourni." });
+
+  console.log("🔹 Header Authorization reçu :", authHeader); // Vérification du header reçu
+
+  if (!authHeader) {
+    return res.status(401).json({ error: "Accès refusé. Aucun token fourni." });
+  }
+
+  // Vérifier si le token contient "Bearer "
+  const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : authHeader;
+
+  console.log("🔹 Token extrait :", token); // Vérification du token extrait
 
   try {
-    const token = authHeader.split(" ")[1]; // Vérifie si "Bearer" est bien présent
-    if (!token) return res.status(401).json({ error: "Token non valide." });
-
-    // const decoded = jwt.verify(token, "SECRET_KEY");
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Stocke l'ID utilisateur
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Remplace par process.env.JWT_SECRET si tu veux sécuriser
+    req.userId = decoded.userId;
+    console.log("🔹 UserId extrait du token :", req.userId); // Vérifie si l'userId est bien extrait
     next();
   } catch (error) {
-    res.status(400).json({ error: "Token invalide." });
+    console.error("Erreur lors de la vérification du token :", error);
+    res.status(401).json({ error: "Token invalide ou expiré." });
   }
 };
 

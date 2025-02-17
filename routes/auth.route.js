@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Identifiants incorrects" });
     }
 
-    const token = jwt.sign({ userId: user._id }, "SECRET_KEY", { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     res.json({ token, userId: user._id, username: user.username });
   } catch (error) {
     res.status(500).json({ error: "Erreur serveur" });
@@ -42,6 +42,7 @@ router.post("/logout", (req, res) => {
 });
 
 // Récupération du profil utilisateur
+// Profil de l'utilisateur connecté
 router.get("/profile", verifyToken, async (req, res) => {
   try {
     console.log("🔹 Token reçu :", req.header("Authorization")); // Vérifie si le token est bien reçu
@@ -52,7 +53,9 @@ router.get("/profile", verifyToken, async (req, res) => {
     }
 
     const user = await User.findById(req.userId).select("username email");
-    if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
+    if (!user) {
+      return res.status(404).json({ error: "Utilisateur non trouvé" });
+    }
 
     res.json({ user });
   } catch (error) {
