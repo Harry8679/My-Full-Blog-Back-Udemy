@@ -44,13 +44,31 @@ router.post("/logout", (req, res) => {
 // Récupération du profil utilisateur
 router.get("/profile", verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("username email");
+    console.log("🔹 Token reçu :", req.header("Authorization")); // Vérifie si le token est bien reçu
+    console.log("🔹 UserId extrait du token :", req.userId); // Vérifie si le userId est bien extrait
+
+    if (!req.userId) {
+      return res.status(401).json({ error: "Accès refusé. Token invalide ou expiré." });
+    }
+
+    const user = await User.findById(req.userId).select("username email");
     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
 
     res.json({ user });
   } catch (error) {
+    console.error("Erreur lors de la récupération du profil :", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
+// router.get("/profile", verifyToken, async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user.userId).select("username email");
+//     if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
+
+//     res.json({ user });
+//   } catch (error) {
+//     res.status(500).json({ error: "Erreur serveur" });
+//   }
+// });
 
 module.exports = router;
