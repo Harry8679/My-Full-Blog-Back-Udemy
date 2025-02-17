@@ -43,6 +43,18 @@ router.get("/", async (req, res) => {
   }
 });
 
+// 📖 Obtenir un article par son ID
+router.get("/:id", async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id).populate("author", "username");
+    if (!post) return res.status(404).json({ error: "Article non trouvé" });
+
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ error: "Erreur lors de la récupération de l'article" });
+  }
+});
+
 // 👍 Ajouter ou retirer un like
 router.post("/:id/like", verifyToken, async (req, res) => {
   try {
