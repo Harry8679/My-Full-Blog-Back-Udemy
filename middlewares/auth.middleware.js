@@ -17,12 +17,19 @@ const verifyToken = (req, res, next) => {
   console.log("🔹 Token extrait :", token); // Vérification du token extrait
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Remplace par process.env.JWT_SECRET si tu veux sécuriser
-    req.userId = decoded.userId;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+    console.log("🔹 Contenu décodé du token :", decoded); // 🔥 Vérification complète
+
+    // Vérification de l'existence de l'ID utilisateur
+    req.userId = decoded.userId || decoded.id || decoded._id; // ✅ Récupérer le bon champ
+    if (!req.userId) {
+      return res.status(401).json({ error: "Token invalide : userId non trouvé." });
+    }
+
     console.log("🔹 UserId extrait du token :", req.userId); // Vérifie si l'userId est bien extrait
     next();
   } catch (error) {
-    console.error("Erreur lors de la vérification du token :", error);
+    console.error("🚨 Erreur lors de la vérification du token :", error);
     res.status(401).json({ error: "Token invalide ou expiré." });
   }
 };
