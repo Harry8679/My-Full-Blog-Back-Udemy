@@ -77,23 +77,4 @@ router.post("/:id/like", verifyToken, async (req, res) => {
   }
 });
 
-// router.post("/:id/like", verifyToken, async (req, res) => {
-//   try {
-//     const post = await Post.findById(req.params.id);
-//     if (!post) return res.status(404).json({ error: "Article non trouvé" });
-
-//     const userId = req.user.userId;
-//     if (post.likes.includes(userId)) {
-//       post.likes = post.likes.filter((id) => id.toString() !== userId);
-//     } else {
-//       post.likes.push(userId);
-//     }
-
-//     await post.save();
-//     res.json({ message: "Like mis à jour", likes: post.likes.length });
-//   } catch (err) {
-//     res.status(500).json({ error: "Erreur lors de la mise à jour du like" });
-//   }
-// });
-
 module.exports = router;
