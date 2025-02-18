@@ -1,5 +1,6 @@
 const express = require("express");
 const Comment = require("../models/comment.model");
+const verifyToken = require("../middlewares/auth.middleware");
 const router = express.Router();
 
 router.post("/:postId", verifyToken, async (req, res) => {
