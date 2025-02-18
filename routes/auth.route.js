@@ -29,12 +29,34 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Identifiants incorrects" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    // 🔥 Génération du token avec `userId` et `username`
+    const token = jwt.sign(
+      { userId: user._id, username: user.username },  // ✅ Ajout de `username`
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
     res.json({ token, userId: user._id, username: user.username });
   } catch (error) {
+    console.error("🚨 Erreur lors de la connexion :", error);
     res.status(500).json({ error: "Erreur serveur" });
   }
 });
+// router.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await User.findOne({ email });
+
+//     if (!user || !(await bcrypt.compare(password, user.password))) {
+//       return res.status(401).json({ error: "Identifiants incorrects" });
+//     }
+
+//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+//     res.json({ token, userId: user._id, username: user.username });
+//   } catch (error) {
+//     res.status(500).json({ error: "Erreur serveur" });
+//   }
+// });
 
 // Déconnexion
 router.post("/logout", (req, res) => {
